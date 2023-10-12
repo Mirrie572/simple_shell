@@ -28,7 +28,7 @@ return (estatus);
 }
 
 count++;
-cmd = tokenize(line);
+cmd = tokenizer(line);
 
 if (!cmd)
 continue;
@@ -46,7 +46,7 @@ free_array(cmd);
 continue;
 }
 
-estatus = execute_cmd(cmd, argv, count);
+estatus = exe_custom_cmd(cmd, argv, count);
 }
 return (0);
 }
