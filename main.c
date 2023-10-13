@@ -4,7 +4,7 @@
  * main - the main function for this shell
  * @argc: the number of arguements
  * @argv: arguments
- * 
+ *
  * Return: zero always
  */
 
@@ -16,11 +16,11 @@ int estatus = 0;
 char **cmd = NULL;
 char *str = NULL;
 
-while(1)
+while (1)
 {
 str = prompt();
 
-if (str == NULL) 
+if (str == NULL)
 {
 if (isatty(STDIN_FILENO))
 write(STDOUT_FILENO, "\n", 1)

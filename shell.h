@@ -1,10 +1,11 @@
-#ifndef "SHELL_H"
-#define "SHELL_H"
+#ifndef  SHELL_H
+#define  SHELL_H
 
 /* all the libraries for the custom shell */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <sys/stat.h>
 #include <string.h>
 #include <fcntl.h>
@@ -38,7 +39,9 @@ int _putchar(char ch);
 /* extra prototypes */
 void prerror(char *name, char *cmd_name, int i);
 char *itoa(int value, char *buffer, int radix, int is_negative);
-void free_array(const char **str)
+void free_array(char **str)
 int count_digits(int value);
+char *get_envi(const char *name);
+char *get_full_path(char *input);
 
 #endif

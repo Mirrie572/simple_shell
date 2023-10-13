@@ -2,7 +2,7 @@
 
 /**
  * envi - print environmental
- * 
+ *
  * Return: nothing
  */
 
@@ -22,7 +22,7 @@ index++;
 
 /**
  * prompt - the main shell prompt for user to enter input
- * 
+ *
  * Return: the users input
  */
 
@@ -32,7 +32,7 @@ ssize_t input_lenght;
 char *cmd = NULL;
 size_t buffer_size = 0;
 
-if(isatty(STDIN_FILENO))
+if (isatty(STDIN_FILENO))
 write(STDOUT_FILENO, "shell$ ", 5);
 
 input_lenght = getline(&cmd, &buffer_size, stdin);

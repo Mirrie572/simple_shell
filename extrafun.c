@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <stdlib.h>
 
 /**
  * free_array - free the memory allocated for 2D arrays of strings
@@ -8,7 +9,7 @@
  *
  */
 
-void free_array(const char **str)
+void free_array(char **str)
 {
 int n = 0;
 
@@ -108,8 +109,9 @@ write(STDERR_FILENO, ": can not be found\n", 12);
 /**
  * count_digits - Count the number of digits in an integer.
  * @value: The integer value.
- * 
+ *
  * Return: The count of digits in the integer.
+ *
  */
 
 int count_digits(int value)
@@ -120,7 +122,7 @@ num = value;
 
 for (; num > 9 || num < -9; digit_count++)
 {
-num /= 10; 
+num /= 10;
 }
 
 return (digit_count);
