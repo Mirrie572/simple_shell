@@ -14,13 +14,13 @@ int main(int argc, char **argv)
 int count = 0;
 int estatus = 0;
 char **cmd = NULL;
-char *line = NULL;
+char *str = NULL;
 
 while(1)
 {
-line = prompt();
+str = prompt();
 
-if (line == NULL) 
+if (str == NULL) 
 {
 if (isatty(STDIN_FILENO))
 write(STDOUT_FILENO, "\n", 1)
@@ -28,7 +28,7 @@ return (estatus);
 }
 
 count++;
-cmd = tokenizer(line);
+cmd = split(str);
 
 if (!cmd)
 continue;

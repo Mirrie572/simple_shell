@@ -30,14 +30,15 @@ char *_strcat(char *trg, char *ori);
 
 char *prompt(void);
 int exec_custom_cmd(char **cmd, char **args, int index);
-char **tokenizer(char *input);
+char **split(char *input);
 void _puts(const char *s);
 void envi(void);
 int _putchar(char ch);
 
-/* buildins prototypes */
-
-
-
+/* extra prototypes */
+void prerror(char *name, char *cmd_name, int i);
+char *itoa(int value, char *buffer, int radix, int is_negative);
+void free_array(const char **str)
+int count_digits(int value);
 
 #endif

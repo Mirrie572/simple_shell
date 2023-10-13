@@ -20,7 +20,7 @@ int exec_custom_cmd(char **cmd, char **args, int index)
 
     if (!full_path)
     {
-        print_cmd_err(args[0], cmd[0], index);
+        prerror(args[0], cmd[0], index);
         free_array(cmd);
         return 127;
     }
