@@ -23,7 +23,7 @@ str = prompt();
 if (str == NULL)
 {
 if (isatty(STDIN_FILENO))
-write(STDOUT_FILENO, "\n", 1)
+write(STDOUT_FILENO, "\n", 1);
 return (estatus);
 }
 
@@ -35,18 +35,18 @@ continue;
 
 if (_strcmp(cmd[0], "exit") == 0)
 {
-free_array(cmd);
-exit(estatu);
+farray(cmd);
+exit(estatus);
 }
 
 if (_strcmp(cmd[0], "env") == 0)
 {
 envi();
-free_array(cmd);
+farray(cmd);
 continue;
 }
 
-estatus = exe_custom_cmd(cmd, argv, count);
+estatus = exec_custom_cmd(cmd, argv, count);
 }
 return (0);
 }

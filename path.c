@@ -77,7 +77,7 @@ if (cmd)
 _strcpy(cmd, path);
 _strcat(cmd, "/");
 _strcat(cmd, input);
-if (access(cmd, F_OK) == 0);
+if (access(cmd, F_OK) == 0)
 {
 free(env_path);
 return (cmd);

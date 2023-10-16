@@ -37,7 +37,7 @@ return (ptr);
 char *_strdup(const char *s)
 {
 
-int *ptr; /* to store the results */
+char *ptr; /* to store the results */
 int len;
 
 if (s == NULL)
@@ -47,10 +47,9 @@ len = _strlen(s);
 
 ptr = (char *)malloc(len + 1);
 
-if (ptr != NULL)
-{
+if (ptr == NULL)
+return(NULL);
 _strcpy(ptr, s);
-}
 
 return (ptr);
 
@@ -71,7 +70,7 @@ unsigned int num;
 int result, i;
 int negative = 1, flag = 0;
 
-for (i = 0; str[i] != '\0' && flag != 2; 1++)
+for (i = 0; str[i] != '\0' && flag != 2; i++)
 {
 if (str[i] == '-')
 negative *= -1;
@@ -102,7 +101,7 @@ return (result);
  * Return: nothing
  */
 
-void _puts(char *s)
+void _puts(const char *s)
 {
 int index = 0;
 

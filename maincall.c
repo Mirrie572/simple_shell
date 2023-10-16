@@ -1,4 +1,4 @@
-#include "shell.h"
+i#include "shell.h"
 
 /**
  * envi - print environmental
@@ -33,7 +33,7 @@ char *cmd = NULL;
 size_t buffer_size = 0;
 
 if (isatty(STDIN_FILENO))
-write(STDOUT_FILENO, "shell$ ", 5);
+write(STDOUT_FILENO, "hsh$  ", 5);
 
 input_lenght = getline(&cmd, &buffer_size, stdin);
 
@@ -60,7 +60,7 @@ return (cmd);
 char **split(char *input)
 {
 
-int token_count = 0;
+int token_count;
 char **command_tokens = NULL;
 char *token = NULL;
 char *input_copy = NULL;
@@ -69,7 +69,7 @@ if (!input)
 return (NULL);
 
 input_copy = _strdup(input);
-token = _strtok(input_copy, CUSTOM_DELIMITERS);
+token = _strtok(input_copy, CUSTOM_DELIMETERS);
 
 if (token == NULL)
 {
@@ -81,25 +81,25 @@ return (NULL);
 while (token)
 {
 token_count++;
-token = _strtok(NULL, CUSTOM_DELIMITERS);
+token = _strtok(NULL, CUSTOM_DELIMETERS);
 }
 
 free(input_copy);
 
 command_tokens = malloc(sizeof(char *) * (token_count + 1));
 if (!command_tokens)
-}
+{
 free(input);
 return (NULL);
 }
 
 token_count = 0;
-token = _strtok(input, CUSTOM_DELIMITERS);
+token = _strtok(input, CUSTOM_DELIMETERS);
 
 while (token)
 {
 command_tokens[token_count] = _strdup(token);
-token = _strtok(NULL, CUSTOM_DELIMITERS);
+token = _strtok(NULL, CUSTOM_DELIMETERS);
 token_count++;
 }
 

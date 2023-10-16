@@ -68,7 +68,7 @@ tracker++;
 }
 else
 tracker = NULL;
-return (tnk_entry);
+return (tkn_entry);
 }
 
 
@@ -103,7 +103,7 @@ int _strlen(const char *str)
 
 int count = 0;
 
-while (s[count] != '\0')
+while (str[count] != '\0')
 count++;
 
 return (count);

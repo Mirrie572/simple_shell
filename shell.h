@@ -20,6 +20,7 @@ extern char **environ;
 
 /* prototypes used for string and print replicas*/
 char *_strchr(const char *s, int ch);
+char *_strtok(char *str, const char *deli);
 int _strlen(const char *str);
 int _strcmp(const char *str1, const char *str2);
 char *_strcpy(char *tar, const char *ori);
@@ -39,7 +40,7 @@ int _putchar(char ch);
 /* extra prototypes */
 void prerror(char *name, char *cmd_name, int i);
 char *itoa(int value, char *buffer, int radix, int is_negative);
-void free_array(char **str)
+void farray(char **str);
 int count_digits(int value);
 char *get_envi(const char *name);
 char *get_full_path(char *input);

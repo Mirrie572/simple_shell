@@ -1,3 +1,4 @@
+i:wq
 #include "shell.h"
 
 /**
@@ -21,7 +22,7 @@ full_path = get_full_path(cmd[0]);
 if (!full_path)
 {
 prerror(args[0], cmd[0], index);
-free_array(cmd);
+farray(cmd);
 return (127);
 }
 
@@ -32,14 +33,14 @@ if (child_pid == 0)
 if (execve(full_path, cmd, environ) == -1)
 {
 free(full_path);
-free_array(cmd);
+farray(cmd);
 }
 }
 else
 {
 waitpid(child_pid, &exit_status, 0);
 free(full_path);
-free_array(cmd);
+farray(cmd);
 }
 
 return (WEXITSTATUS(exit_status));

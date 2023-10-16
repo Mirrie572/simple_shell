@@ -2,14 +2,14 @@
 #include <stdlib.h>
 
 /**
- * free_array - free the memory allocated for 2D arrays of strings
+ * farray - free the memory allocated for 2D arrays of strings
  * @str: its the 2D array of strings to be freed
  *
  * Return: nothing
  *
  */
 
-void free_array(char **str)
+void farray(char **str)
 {
 int n = 0;
 
