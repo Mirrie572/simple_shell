@@ -44,5 +44,7 @@ void farray(char **str);
 int count_digits(int value);
 char *get_envi(const char *name);
 char *get_full_path(char *input);
-
+void clr_inf(info_t *info)
+void seth_info(info_t *info, char **av)
+void free_inf(info_t *info, int all)
 #endif
