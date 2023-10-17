@@ -2,33 +2,6 @@
 #include <stdlib.h>
 
 /**
- * farray - free the memory allocated for 2D arrays of strings
- * @str: its the 2D array of strings to be freed
- *
- * Return: nothing
- *
- */
-
-void farray(char **str)
-{
-int n = 0;
-
-if (str == NULL)
-return;
-
-while (str[n] != NULL)
-{
-free(str[n]);
-str[n] = NULL;
-n++;
-}
-
-free(str);
-
-str = NULL;
-}
-
-/**
  * itoa - Convert an integer to a string.
  * @value: The integer value to convert.
  * @buffer: The buffer to store the resulting string.
@@ -40,6 +13,7 @@ char *itoa(int value, char *buffer, int radix, int is_negative)
 {
 int digit, right;
 int n = abs(value);
+
 int i = 0;
 int left = 0;
 char temp;
@@ -78,6 +52,7 @@ right--;
 }
 
 return (buffer);
+
 }
 
 /**
@@ -105,7 +80,6 @@ write(STDERR_FILENO, ": can not be found\n", 12);
 
 }
 
-
 /**
  * count_digits - Count the number of digits in an integer.
  * @value: The integer value.
@@ -126,4 +100,69 @@ num /= 10;
 }
 
 return (digit_count);
+
+}
+
+
+/**
+ * counter- it counts the number of tokens in an array.
+ * @str: The array of tokens to be counted
+ * 
+ * Return: the number of tokens in the string array.
+*/
+int counter(char **str)
+{
+int tracker = 0;
+
+while (str[tracker] != NULL)
+tracker++;
+
+return (tracker);
+
+}
+
+/**
+ * cerror - it Concatenate result errors
+ * @buff: it stores the error results
+ * @name: the program name 
+ * @tracker: count and track the tokens
+ * @cmd: the error command to be concatenated
+ *
+ * Return: nothing
+ */
+
+void msg_cerror(char *buff, const char *name, int tracker, const char *cmd)
+{
+int n;
+int digit = 1;
+const char *msg = "error: ";
+int len = 0;
+int count = tracker;
+
+while (*name != '\0')
+buff[len++] = *name++;
+buff[len++] = ':';
+buff[len++] = ' ';
+
+while (count / 10 > 0)
+{
+digit++;
+count /= 10;
+}
+for (n = 0; n < digit; n++)
+{
+buff[len + digit - n - 1] = '0' + (tracker % 10);
+tracker /= 10;
+}
+len += digit;
+buff[len++] = ':';
+buff[len++] = ' ';
+
+while (*msg != '\0')
+buff[len++] = *msg++;
+
+while (*cmd != '\0')
+buff[len++] = *cmd++;
+buff[len++] = '\n';
+buff[len] = '\0';
 }

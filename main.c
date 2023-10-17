@@ -3,50 +3,19 @@
 /**
  * main - the main function for this shell
  * @argc: the number of arguements
- * @argv: arguments
- *
+ * @argv: pointer to all arguments
+ * @envptr: pointer environmental variables
+ * 
  * Return: zero always
  */
 
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **envptr)
 {
-(void)argc; /* ignore parameter not used*/
-int count = 0;
-int estatus = 0;
-char **cmd = NULL;
-char *str = NULL;
 
-while (1)
-{
-str = prompt();
+(void)argc;
 
-if (str == NULL)
-{
-if (isatty(STDIN_FILENO))
-write(STDOUT_FILENO, "\n", 1);
-return (estatus);
-}
+start();
+user_info_handler(envptr, argv);
+return (EXIT_SUCCESS);
 
-count++;
-cmd = split(str);
-
-if (!cmd)
-continue;
-
-if (_strcmp(cmd[0], "exit") == 0)
-{
-farray(cmd);
-exit(estatus);
-}
-
-if (_strcmp(cmd[0], "env") == 0)
-{
-envi();
-farray(cmd);
-continue;
-}
-
-estatus = exec_custom_cmd(cmd, argv, count);
-}
-return (0);
 }

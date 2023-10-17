@@ -1,110 +1,199 @@
-i#include "shell.h"
+#include "shell.h"
 
 /**
- * envi - print environmental
- *
- * Return: nothing
+ * prompt - main shell prompt
+ * @cmd: the command to be entered
  */
 
-void envi(void)
+void *prompt(char *cmd)
 {
-int index = 0;
-
-while (environ[index])
-{
-
-_puts(environ[index]);
-index++;
-
-}
-
-}
-
-/**
- * prompt - the main shell prompt for user to enter input
- *
- * Return: the users input
- */
-
-char *prompt(void)
-{
-ssize_t input_lenght;
-char *cmd = NULL;
-size_t buffer_size = 0;
 
 if (isatty(STDIN_FILENO))
-write(STDOUT_FILENO, "hsh$  ", 5);
-
-input_lenght = getline(&cmd, &buffer_size, stdin);
-
-if (input_lenght == -1)
 {
-free(cmd);
-return (NULL);
+write(STDIN_FILENO, cmd, 2);
+fflush(stdout);
 }
 
-return (cmd);
+}
+
+/**
+ * start - this where the program starts
+ * Description: does all the necessary for the  setup for the pragram to start
+ */
+
+void start(void)
+{
+
+signal(SIGINT, sighandler);
+
+prompt("hsh$ ");
 
 }
 
 
 /**
- * split - tokenizes input from user
+ * split_input_line - Splits an input line into tokens
+ * @env: The environment variables
+ * @argv: The command-line arguments
+ * @input: The input line
+ * @name: The name of the executable
+ * @count: The current cycle count
+ * @estatus: the exit code for exiting.
+ */
+void split_input_line(char **env, char **argv, char *input, char *name, int count, int *exit_status)
+{
+char *exe_path = (char *)malloc(sizeof(char) * PATH_SIZE);
+char **tokens = (char **)malloc(sizeof(char *) * TOKEN_SIZE);
+char *err_msg = (char *)malloc(sizeof(char *) * TOKEN_SIZE);
+int is_built_in, token_count;
+
+_memset(name, 0, TOKEN_SIZE);
+input_process(input, &token_count, name, exit_status, count, argv, tokens, &is_built_in);
+
+if (token_count > 0 && tokens != NULL && !is_built_in)
+{
+exe_path = find_executable(env, tokens[0], name, exe_path);
+if (exe_path)
+*exit_status = execute_command(exe_path, env, tokens, argv[0]);
+else
+{
+msg_cerror(err_msg, argv[0],
+count, tokens[0]);
+write(STDERR_FILENO, err_msg, _strlen(err_msg));
+if (!isatty(STDIN_FILENO))
+
+exit(127);
+
+}
+}
+free(exe_path);
+free_tokens(tokens);
+free(tokens);
+free(err_msg);
+}
+
+
+
+/**
+ * user_info_handler - handle user input and the  execution
+ * @env: apointer to an array string of  environment variables
+ * @argv: pointer to an array string of command-line arguments
  *
- * @input: the command entered by the user
- *
- * Return: a string 2D array
- *
+ * Returns: Nothing
  */
 
-char **split(char *input)
+void user_info_handler(char **env, char **argv)
 {
+int cycle_count = 1, in_double_quotes = 0;
+char exe_name[TOKEN_SIZE], *multiline_buffer = NULL, input_char;
+size_t buffer_size = BUFFER_SIZE, buffer_index = 0;
+int *estatus = (int *)malloc(sizeof(int));
 
-int token_count;
-char **command_tokens = NULL;
-char *token = NULL;
-char *input_copy = NULL;
-
-if (!input)
-return (NULL);
-
-input_copy = _strdup(input);
-token = _strtok(input_copy, CUSTOM_DELIMETERS);
-
-if (token == NULL)
+multiline_buffer = (char *)malloc(buffer_size);
+*estatus = 0;
+while (1)
 {
-free(input);
-free(input_copy);
-return (NULL);
+input_char = _getline();
+if (input_char == EOF)
+break;
+else if (input_char == '"' && in_double_quotes == 0)
+in_double_quotes = 1;
+else if (input_char == '"' && in_double_quotes == 1)
+in_double_quotes = 0;
+else if (input_char == '\n' && in_double_quotes == 0)
+{
+multiline_buffer[buffer_index] = '\0';
+split_input_line(env, argv, multiline_buffer,
+exe_name, cycle_count, estatus);
+buffer_index = 0;
+cycle_count++;
+prompt("hsh$ ");
+}
+else
+{
+multiline_buffer[buffer_index] = input_char;
+buffer_index++;
+if (buffer_index >= buffer_size)
+{
+buffer_size *= 2;
+multiline_buffer = _realloc(multiline_buffer, buffer_size);
+}
+}
+}
+free(multiline_buffer);
+free(estatus);
 }
 
-while (token)
+/**
+ * input_process- Process and execute what the user has entered.
+ *
+ * @input_line: The user input line to be processed.
+ * @token_count: hold num tof string token 
+ * @buff: A buffer to store the executed cmd.
+ * @exit_status: the exit status pointer
+ * @str: the string tokens
+ * @tracker: counts the cycle and keep track
+ * @argv: Pointer to the command arguments.
+ * @b_flag: boolean used to  indicate whether the input corresponds to a built-in command.
+ *
+ * 
+ * Return: (char **) An array of tokens.
+ */
+
+void input_process(char *input_line, int *token_count, char *buff, int *exit_status, int tracker, char **argv, char **str, int *b_flag)
 {
-token_count++;
-token = _strtok(NULL, CUSTOM_DELIMETERS);
+
+split(input_line, str);
+
+*token_count = count_tokens(str);
+if (*token_count > 0)
+_strcpy(b_flag, str[0]);
+
+*b_flag = cmd_handler(str, estatus, tracker, argv);
+
 }
 
-free(input_copy);
 
-command_tokens = malloc(sizeof(char *) * (token_count + 1));
-if (!command_tokens)
+/**
+ * split - a string will be split into a line
+ * @str: the string to be split.
+ * @tokens: the tokens that.
+ *
+ * Return: An array of tokens otherwise 
+*/
+char **split(char *str, char **tokens)
 {
-free(input);
-return (NULL);
-}
 
-token_count = 0;
-token = _strtok(input, CUSTOM_DELIMETERS);
+char *token;
+char *r = str;
+int tracker = 0;
 
-while (token)
+while ((token = _strtok(r, " ")) != NULL)
 {
-command_tokens[token_count] = _strdup(token);
-token = _strtok(NULL, CUSTOM_DELIMETERS);
-token_count++;
+r = NULL;
+if (token[0] == '\'' || token[0] == '"')
+{
+char *close = _strchr(token + 1, token[0]);
+
+if (close != NULL)
+{
+*close = '\0';
+tokens[tracker] = _strdup(token + 1);
+tracker++;
+
 }
-
-free(input);
-command_tokens[token_count] = NULL;
-
-return (command_tokens);
+else
+{
+tokens[tracker] = _strdup(token);
+tracker++;
+}
+}
+else
+{
+tokens[tracker] = _strdup(token);
+tracker++;
+}
+}
+tokens[tracker] = NULL;
+return (tokens);
 }

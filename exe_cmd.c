@@ -1,47 +1,45 @@
-i:wq
 #include "shell.h"
 
 /**
- * exec_custom_cmd - Execute a custom command
- * with error handling.
- * @cmd: The command provided by the user.
- * @args: The argument vector from the main program.
- * @index: The index of the executed command.
+ * execute_cmd - the cmd ti be executed with its arguments.
+ * @path: The full path to the executable.
+ * @ptr: its a pointer to the environment variables.
+ * @str: the command and its arguments as an array of string
+ * @name: shell program name
  *
- * Return: The exit status of cmd that is 0 on success.
+ * Return: the exit status or an error.
  */
-
-int exec_custom_cmd(char **cmd, char **args, int index)
+int execute_cmd(char *path, char **ptr, char **str, char *name)
 {
-int exit_status;
 pid_t child_pid;
-char *full_path;
-
-full_path = get_full_path(cmd[0]);
-
-if (!full_path)
-{
-prerror(args[0], cmd[0], index);
-farray(cmd);
-return (127);
-}
+int estatus;    
 
 child_pid = fork();
-
-if (child_pid == 0)
+if (child_pid == -1)
 {
-if (execve(full_path, cmd, environ) == -1)
+perror("error");
+exit(errno);
+}
+else if (child_pid == 0)
 {
-free(full_path);
-farray(cmd);
+child_pid = getpid();
+/* this is the parent  Child process */
+if (execve(path, str, ptr) == -1)
+{
+perror(name);
+_exit(errno);
 }
 }
 else
 {
-waitpid(child_pid, &exit_status, 0);
-free(full_path);
-farray(cmd);
+/* this is the Parent process */
+waitpid(child_pid, &estatus, WCONTINUED);
+if (WIFEXITED(estatus))
+{
+return (WEXITSTATUS(estatus));
 }
-
-return (WEXITSTATUS(exit_status));
+else
+return (errno);
+}
+return (0);
 }

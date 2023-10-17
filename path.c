@@ -3,89 +3,108 @@
 #include <stddef.h>
 
 /**
- * get_envi - it gives the value of environmental variable
- * @name: name of the environmental variable
+ * _getenv - get the value of an environment variable.
+ * @var: The name of the environment variable.
  *
- * Return: the value of the environmental variable.
- *
+ * Return: env var pointer otherwise NULL.
  */
 
-char *get_envi(const char *name)
+char *_getenv(const char *var)
 {
+int b;
 
-int index = 0;
-char *copy, *key;
-char *value, *env_value;
-
-for (; environ[index]; index++)
-{
-
-copy = _strdup(environ[index]);
-key = _strtok(copy, "=");
-
-if (_strcmp(key, name) == 0)
-{
-value = _strtok(NULL, "\n");
-env_value = _strdup(value);
-
-free(copy);
-return (env_value);
-
-}
-free(copy);
-copy = NULL;
-}
+if (var == NULL || environ == NULL)
 return (NULL);
-}
 
+for (b = 0; environ[b] != NULL; b++)
+{
+char *env_var = environ[b];
+int c = 0;
+
+while (var[c] != '\0' && env_var[c] == var[c])
+c++;
+
+if (var[c] == '\0' && env_var[c] == '=')
+return (env_var + c + 1);
+
+}
+	return (NULL);
+}
 
 /**
- * get_full_path - gets the full path of the command
- * @input: the command entered by user
+ * full_path - gets the full path of the cmd
+ * @envvar: the environment variables.
+ * @name: te name of the executable file.
+ * @f_path: this a buffer to stole the full path of executable file.
+ * @e_found: store the executable found.
  *
- * Return: the full path of the command
+ * Return: the path else NULL.
+ */
+char *full_path(char **envvar, char *name, char *f_path, char *e_found)
+{
+struct stat file_stat;
+char *copy;
+char *path_var;
+char *component;
+char candidate[PATH_SIZE];
+
+path_var = _pathv(envvar);
+
+if (stat(name, &file_stat) == 0 && _strchr(name, '/'))
+{
+_strcpy(e_found, name);
+return (e_found);
+}
+else if (path_var != NULL)
+{
+copy = _strdup(path_var);
+component = _strtok(copy, ":");
+
+while (component != NULL)
+{
+_strcpy(candidate, component);
+_strcat(candidate, "/");
+_strcat(candidate, f_path);
+
+if (stat(candidate, &file_stat) == 0)
+{
+_strcpy(e_found, candidate);
+free(copy);
+return (e_found);
+}
+
+component = _strtok(NULL, ":");
+
+}
+
+}
+free(e_found);
+free(copy);
+
+return (NULL);
+
+}
+/**
+ * _pathv - Get the value of the PATH environment variable.
+ * @var: name of the environmental variable
+ *
+ * Return: the value of the envi variable otherwise NULL.
  */
 
-char *get_full_path(char *input)
+char *_pathv(char **var)
 {
 
-char *env_path;
-char *cmd, *path;
 int index;
+index = 0;
 
-for (index = 0; input[index]; index++)
+while (var[index] != NULL)
 {
-if (input[index] == '/')
-{
-if (access(input, F_OK) == 0)
-return (_strdup(input));
-return (NULL);
-}
-}
+char *value = var[index];
 
-env_path = get_envi("PATH");
-if (!env_path)
-return (NULL);
+if (_strstr(value, "PATH=") == value)
 
-path = _strtok(env_path, ":");
-
-while (path)
-{
-cmd = malloc(_strlen(path) + _strlen(input) + 2);
-if (cmd)
-{
-_strcpy(cmd, path);
-_strcat(cmd, "/");
-_strcat(cmd, input);
-if (access(cmd, F_OK) == 0)
-{
-free(env_path);
-return (cmd);
+return (value + 5);
+index++;
 }
-free(cmd),cmd = NULL;
-path = _strtok(NULL, ":");
-}
-}
-free(env_path);
 return (NULL);
 }
