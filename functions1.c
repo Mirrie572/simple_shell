@@ -58,6 +58,7 @@ if (new_size > sizeof(old_size))
 new_size = sizeof(old_ptr);
 
 f = (char *)new_ptr;
+
 str = (const char *)old_ptr;
 
 while (new_size--)

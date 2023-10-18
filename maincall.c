@@ -32,44 +32,48 @@ prompt("hsh$ ");
 
 
 /**
- * split_input_line - Splits an input line into tokens
+ * tokenize_line - Splits an input line into tokens
  * @env: The environment variables
  * @argv: The command-line arguments
  * @input: The input line
  * @name: The name of the executable
  * @count: The current cycle count
- * @estatus: the exit code for exiting.
+ * @exit_status: the exit code for exiting.
  */
-void split_input_line(char **env, char **argv, char *input, char *name, int count, int *exit_status)
+void tokenize_line(char **env, char **argv, char *input, char *name, int count, int *exit_status)
 {
-char *exe_path = (char *)malloc(sizeof(char) * PATH_SIZE);
+
+char *msgerror = (char *)malloc(sizeof(char *) * TOKEN_SIZE);
+char *execute_path = (char *)malloc(sizeof(char) * PATH_SIZE);
 char **tokens = (char **)malloc(sizeof(char *) * TOKEN_SIZE);
-char *err_msg = (char *)malloc(sizeof(char *) * TOKEN_SIZE);
-int is_built_in, token_count;
+
+int find;
+int token_count;
 
 _memset(name, 0, TOKEN_SIZE);
-input_process(input, &token_count, name, exit_status, count, argv, tokens, &is_built_in);
+input_process(input, &token_count, name, exit_status, count, argv, tokens, &find);
 
-if (token_count > 0 && tokens != NULL && !is_built_in)
+if (token_count > 0 && tokens != NULL && !find)
 {
-exe_path = find_executable(env, tokens[0], name, exe_path);
-if (exe_path)
-*exit_status = execute_command(exe_path, env, tokens, argv[0]);
+execute_path = find_executable(env, tokens[0], name, execute_path);
+if (execute_path)
+*exit_status = execute_command(execute_path, env, tokens, argv[0]);
 else
 {
-msg_cerror(err_msg, argv[0],
+
+msg_cerror(msgerror, argv[0],
 count, tokens[0]);
-write(STDERR_FILENO, err_msg, _strlen(err_msg));
+write(STDERR_FILENO, msgerror, _strlen(msgerror));
 if (!isatty(STDIN_FILENO))
 
 exit(127);
 
 }
 }
-free(exe_path);
+free(execute_path);
 free_tokens(tokens);
 free(tokens);
-free(err_msg);
+free(msgerror);
 }
 
 
@@ -84,44 +88,63 @@ free(err_msg);
 
 void user_info_handler(char **env, char **argv)
 {
-int cycle_count = 1, in_double_quotes = 0;
-char exe_name[TOKEN_SIZE], *multiline_buffer = NULL, input_char;
-size_t buffer_size = BUFFER_SIZE, buffer_index = 0;
+int count = 1;
+int doqs = 0;
+char name[TOKEN_SIZE];
+char *mutbuf = NULL;
+char c;
+size_t size = BUFFER_SIZE;
+size_t i = 0;
 int *estatus = (int *)malloc(sizeof(int));
 
-multiline_buffer = (char *)malloc(buffer_size);
+mutbuf = (char *)malloc(size);
 *estatus = 0;
 while (1)
 {
-input_char = _getline();
-if (input_char == EOF)
+c = _getline();
+if (c == EOF)
 break;
-else if (input_char == '"' && in_double_quotes == 0)
-in_double_quotes = 1;
-else if (input_char == '"' && in_double_quotes == 1)
-in_double_quotes = 0;
-else if (input_char == '\n' && in_double_quotes == 0)
+else if (c == '"' && doqs == 0)
+doqs = 1;
+else if (c == '"' && doqs == 1)
+doqs = 0;
+else if (c == '\n' && doqs == 0)
 {
-multiline_buffer[buffer_index] = '\0';
-split_input_line(env, argv, multiline_buffer,
-exe_name, cycle_count, estatus);
-buffer_index = 0;
-cycle_count++;
+mutbuf[i] = '\0';
+
+tokenize_line(env, argv, mutbuf, name, count, estatus);
+i = 0;
+count++;
+
 prompt("hsh$ ");
 }
+
 else
+
 {
-multiline_buffer[buffer_index] = input_char;
-buffer_index++;
-if (buffer_index >= buffer_size)
+
+mutbuf[i] = c;
+
+i++;
+
+if (i >= size)
+
 {
-buffer_size *= 2;
-multiline_buffer = _realloc(multiline_buffer, buffer_size);
+
+size *= 2;
+
+mutbuf = _realloc(mutbuf, size);
+
 }
+
 }
+
 }
-free(multiline_buffer);
+
+free(mutbuf);
+
 free(estatus);
+
 }
 
 /**
@@ -130,7 +153,7 @@ free(estatus);
  * @input_line: The user input line to be processed.
  * @token_count: hold num tof string token 
  * @buff: A buffer to store the executed cmd.
- * @exit_status: the exit status pointer
+ * @estatus: the exit status pointer
  * @str: the string tokens
  * @tracker: counts the cycle and keep track
  * @argv: Pointer to the command arguments.
@@ -140,7 +163,7 @@ free(estatus);
  * Return: (char **) An array of tokens.
  */
 
-void input_process(char *input_line, int *token_count, char *buff, int *exit_status, int tracker, char **argv, char **str, int *b_flag)
+void input_process(char *input_line, int *token_count, char *buff, int *estatus, int tracker, char **argv, char **str, int *b_flag)
 {
 
 split(input_line, str);
@@ -166,11 +189,14 @@ char **split(char *str, char **tokens)
 
 char *token;
 char *r = str;
+
 int tracker = 0;
 
 while ((token = _strtok(r, " ")) != NULL)
 {
+
 r = NULL;
+
 if (token[0] == '\'' || token[0] == '"')
 {
 char *close = _strchr(token + 1, token[0]);
