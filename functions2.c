@@ -86,7 +86,7 @@ if (chdir(new_dir) == -1)
 {
 char *error_message = (char *)malloc(BUFFER_SIZE);
 
-error_msg(error_message, argv[0],
+cderror(error_message, argv[0],
 cycle_count, new_dir);
 write(STDERR_FILENO, error_message, _strlen(error_message));
 free(error_message);

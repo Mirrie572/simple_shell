@@ -30,7 +30,7 @@ char *_strtok(char *str, const char *deli);
 int _strlen(const char *str);
 int _strcmp(char *str1, const char *str2);
 char *_strcpy(char *tar, const char *ori);
-char _atoi(const char *str);
+int _atoi(const char *str);
 char *_strdup(const char *s);
 char *_strcat(char *trg, char *ori);
 char *_strstr(const char *str, const char *n_str);

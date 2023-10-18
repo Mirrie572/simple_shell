@@ -30,7 +30,7 @@ while (commands[n].ptr != NULL)
 {
 if (_strcmp(command_name, commands[n].cmd_name) == 0)
 {
-commands[n].ptr(str, estatus, count, argv);
+commands[n].ptr(str, estatus, tracker, argv);
 
 return (1);
 }
