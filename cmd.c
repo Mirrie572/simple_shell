@@ -4,12 +4,12 @@
  * cmd_handler - Check and execute built-in commands.
  * @str: Array of command tokens.
  * @estatus: the exit status pointer
- * @count: keeps tracck of the count
+ * @tracker: keeps tracck of the count
  * @argv: command args pointer.
  *
  * Return:  cmd was executed 1 otherwise 0
  */
-int cmd_handler(char **str, int *estatus, int count, char **argv)
+int cmd_handler(char **str, int *estatus, int tracker, char **argv)
 {
 int n = 0;
 char *command_name = str[0];
@@ -17,8 +17,8 @@ char *command_name = str[0];
 builtins_cmd commands[] = {
 { "env", env_cmd },
 { "exit", exit_cmd},
-{ "setenv", setenv_cmd },
-{ "unsetenv", unsetenv_cmd },
+{ "setenv", _setenv_cmd },
+{ "unsetenv", _unsetenv_cmd },
 { "cd", cd_cmd },
 { NULL, NULL }
 };
@@ -28,7 +28,7 @@ return (0);
 
 while (commands[n].ptr != NULL)
 {
-if (_strcmp(command_name, commands[i].cmd_name) == 0)
+if (_strcmp(command_name, commands[n].cmd_name) == 0)
 {
 commands[n].ptr(str, estatus, count, argv);
 
@@ -80,6 +80,8 @@ return (0);
  *
  * Return: its zero all the time
  */
+int exit_cmd(char **str, int *estatus, int count, char **argv);
+
 int exit_cmd(char **str, int *estatus, int count, char **argv)
 {
 char *merror = malloc(sizeof(char) * BUFFER_SIZE);
@@ -90,10 +92,13 @@ if (str[1] != NULL)
 {
 if (_atoi(str[1]) <= 0)
 {
-msg_cerror(merror, argv[0],count, str[1]);
+
+exitmsg(merror, argv[0], count, str[1]);
+
 write(STDERR_FILENO, merror, _strlen(merror));
 free(merror);
 exit(2);
+
 }
 else
 {
@@ -147,7 +152,7 @@ return (-1);
 
 if (setenv(str[1], str[2], 1) == -1)
 {
-write(STDERR_FILENO, "setenv: error setting envi\n", 43);
+write(STDERR_FILENO, "setenv: error setting envi\n", 28);
 return (-1);
 }
 
@@ -156,7 +161,7 @@ return (0);
 }
 
 /**
- * _unsetenv_command - deletees the set of environment variable.
+ * _unsetenv_cmd - deletees the set of environment variable.
  * @str: a string Pointer to an array of tokens.
  * @estatus: Pointer to the exit status.
  * @tracker: keeps track of the count cycle.

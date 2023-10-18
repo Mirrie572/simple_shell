@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <sys/wait.h>
 
 /**
  * execute_cmd - the cmd ti be executed with its arguments.
@@ -12,7 +13,7 @@
 int execute_cmd(char *path, char **ptr, char **str, char *name)
 {
 pid_t child_pid;
-int estatus;    
+int estatus;
 
 child_pid = fork();
 if (child_pid == -1)

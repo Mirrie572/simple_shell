@@ -14,7 +14,8 @@ char *_strchr(const char *str, int ch)
 while (*str != '\0')
 {
 if (*str == (char)ch)
-{return ((char *)str);
+{
+return ((char *)str);
 }
 str++;
 }
@@ -35,42 +36,33 @@ return (NULL);
 
 char *_strtok(char *str, const char *deli)
 {
-
-char *tkn_entry; /* hold token start position */
-static char *tracker; /* keep track of the token */
+static char *tkn_next;
+char *track;
 
 if (str != NULL)
-tracker = str;
-
-if (tracker == NULL || *tracker == '\0')
+tkn_next = str;
+if (tkn_next == NULL || *tkn_next == '\0')
 return (NULL);
 
-while (*tracker && _strchr(deli, *tracker))
-{
-tracker++;
-}
-
-if (*tracker == '\0')
+while (*tkn_next && _strchr(deli, *tkn_next))
+tkn_next++;
+if (*tkn_next == '\0')
 return (NULL);
+track = tkn_next;
 
-tkn_entry = tracker;
-
-while (*tracker && _strchr(deli, *tracker))
+while (*tkn_next && !_strchr(deli, *tkn_next))
+tkn_next++;
+if (*tkn_next)
 {
-tracker++;
-}
-
-if (*tracker)
-{
-*tracker = '\0';
-tracker++;
-
+*tkn_next = '\0';
+tkn_next++;
 }
 else
-tracker = NULL;
-return (tkn_entry);
-}
+tkn_next = NULL;
 
+return (track);
+
+}
 
 /**
  * _strcpy - a strcpy replica which copies a string from source to destination
@@ -118,7 +110,7 @@ return (count);
  * Return: 0 if both strngs are equal otherwise numbers greater or less than 0.
  */
 
-int _strcmp(const char *str1, const char *str2)
+int _strcmp(char *str1, const char *str2)
 {
 
 while (*str1 != '\0' && *str2 != '\0' && *str1 == *str2)

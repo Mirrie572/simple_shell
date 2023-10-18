@@ -48,7 +48,7 @@ len = _strlen(s);
 ptr = (char *)malloc(len + 1);
 
 if (ptr == NULL)
-return(NULL);
+return (NULL);
 _strcpy(ptr, s);
 
 return (ptr);
@@ -63,54 +63,26 @@ return (ptr);
  * Return: 0 if no convertion else the interger
  */
 
-char _atoi(const char *str)
+int _atoi(const char *str)
 {
+int r = 0;
+int sign = 1;
 
-unsigned int num;
-int result, i;
-int negative = 1, flag = 0;
-
-for (i = 0; str[i] != '\0' && flag != 2; i++)
+while (*str == ' ' || (*str >= 9 && *str <= 13))
+str++;
+if (*str == '-' || *str == '+')
 {
-if (str[i] == '-')
-negative *= -1;
-if (str[i] >= '0' && str[i] <= '9')
-
+if (*str == '-')
+sign = -1;
+str++;
+}
+while (*str >= '0' && *str <= '9')
 {
-flag = 1;
-num *= 10;
-num += (str[i] - '0');
+r = r * 10 + (*str - '0');
+str++;
 }
 
-else if (flag == 1)
-flag = 2;
-}
-
-if (negative == -1)
-result = -num;
-else
-result = num;
-
-return (result);
-}
-
-/**
- * _puts - prints a string and a new line
- * @s: pointer to the string to be printed
- *
- * Return: nothing
- */
-
-void _puts(const char *s)
-{
-int index = 0;
-
-while (s[index])
-{
-_putchar(s[index]);
-index++;
-}
-_putchar('\n');
+return (r *sign);
 }
 
 /**

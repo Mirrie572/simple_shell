@@ -9,7 +9,7 @@ int _getline(void)
 {
 char input_char;
 ssize_t b_read;
-b_read = read(0,  input_char, 1);
+b_read = read(0,  &input_char, 1);
 
 if (b_read == -1)
 {
@@ -18,7 +18,6 @@ exit(EXIT_FAILURE);
 }
 else if (b_read == 0)
 return (EOF);
-    
 else
 {
 return ((int) input_char);
@@ -26,7 +25,7 @@ return ((int) input_char);
 }
 
 /**
- * _realloc - realloc replica which reallocate memory for a pointer with a new size
+ * _realloc - realloc replica which reallocate memory
  * @old_ptr:  to be reallocate
  * @old_size: the neew size of the memory
  *
@@ -37,7 +36,7 @@ void *_realloc(void *old_ptr, size_t old_size)
 size_t new_size;
 void *new_ptr;
 char *f;
-const char str;
+const char *str;
 
 if (old_size == 0)
 {
@@ -46,7 +45,7 @@ return (NULL);
 }
 
 if (old_ptr == NULL)
-return (malloc(new_size));
+return (malloc(old_size));
 
 new_ptr = malloc(old_size);
 
@@ -54,7 +53,7 @@ if (new_ptr == NULL)
 return (NULL);
 new_size = old_size;
 
-if (new_size > sizeof(old_size))
+if (new_size > sizeof(old_ptr))
 new_size = sizeof(old_ptr);
 
 f = (char *)new_ptr;
@@ -70,9 +69,9 @@ return (new_ptr);
 }
 
 /**
- * sighand - a custom signal handler which interrupting a process.
+ * sighandler - a custom signal handler which interrupting a process.
  * @num: signal number received.
- * 
+ *
  * Return: nothing
  */
 
@@ -82,14 +81,15 @@ void sighandler(int num)
 /* write a message to the standard error stream (usually the console)*/
 write(STDERR_FILENO, "\n$ ", 3);
 fflush(stdout);
+
 }
 
 /**
- * _memset - memset replica which Set the memory pointed to by dest to the specified value for a given number of bytes.
+ * _memset - memset replica which Set for a given number of bytes.
  * @dest: Pointer to the memory to be filled.
  * @value: The value to set in each byte.
  * @size: Number of bytes to be set.
- * 
+ *
  * Return: A pointer to the memory area 'dest'.
  */
 
@@ -107,8 +107,8 @@ return (dest);
 /**
  * farray - Free a 2d array of tokesn.
  *  @str: The 2d array of tokens to be freed.
- * 
- * Return: nothing 
+ *
+ * Return: nothing
  */
 
 void farray(char **str)

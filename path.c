@@ -40,6 +40,8 @@ return (env_var + c + 1);
  *
  * Return: the path else NULL.
  */
+char *full_path(char **envvar, char *name, char *f_path, char *e_found);
+
 char *full_path(char **envvar, char *name, char *f_path, char *e_found)
 {
 struct stat file_stat;

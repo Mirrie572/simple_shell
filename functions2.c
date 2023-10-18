@@ -1,7 +1,7 @@
-#include "shell.h" 
+#include "shell.h"
 
 /**
- * error_mesg - Concatenate error message components
+ * cderror - Concatenate error message components
  * @message: Buffer to store the error message
  * @name: Name of the program
  * @count: Cycle count
@@ -9,9 +9,10 @@
  *
  * Return: Nothing
  */
-void error_mesg(char *message, const char *name, int count, const char *command)
+void cderror(char *message, const char *name, int count, const char *command)
 {
-int len = 0, f;
+int len = 0;
+int f;
 int cycle = count;
 int digits = 1;
 const char *not_f = "cd: can't cd to ";
@@ -51,13 +52,13 @@ message[len] = '\0';
  * cd_cmd - Custom cd prints the  current directory.
  * @tokens: Pointer to an array of tokens.
  * @exit_status: Pointer to the exit status.
- * @count: keeps track of the count.
+ * @cycle_count: keeps track of the count.
  * @argv: Pointer to the command arguments.
  *
  * Return: always zero toherwise -1
  */
-
-int cd_cmd(char **tokens, __attribute__((unused)) int *exit_status, int count, char **argv)
+int cd_cmd(char **tokens, __attribute__((unused)) int *exit_status,
+int cycle_count, char **argv)
 {
 char *new_dir;
 char current_dir[PATH_SIZE];
@@ -76,21 +77,19 @@ getcwd(new_dir, PATH_SIZE);
 }
 else
 new_dir = tokens[1];
-
 if (getcwd(current_dir, PATH_SIZE) == NULL)
 {
-
 perror("getcwd");
 return (-1);
 }
-
 if (chdir(new_dir) == -1)
 {
-char *msgerror = (char *)malloc(BUFFER_SIZE);
+char *error_message = (char *)malloc(BUFFER_SIZE);
 
-error_mesg(msgerror, argv[0], count, new_dir);
-write(STDERR_FILENO, msgerror, _strlen(msgerror));
-free(msgerror);
+error_msg(error_message, argv[0],
+cycle_count, new_dir);
+write(STDERR_FILENO, error_message, _strlen(error_message));
+free(error_message);
 return (-1);
 }
 setenv("OLDPWD", current_dir, 1);
@@ -107,7 +106,7 @@ return (0);
  * _strpbrk - Locate the first occurrence of any character in a set.
  * @str: The string to search.
  * @s_str: The set of characters to search for.
- * 
+ *
  * Return: A pointer to the first matching character,
  * or NULL if none are found.
  */
@@ -135,7 +134,7 @@ return (NULL);
  * _strstr - Locate a substring in a string.
  * @str: The string to search in.
  * @n_str: The substring to search for.
- * 
+ *
  * Return: A pointer to the beginning of the substring, or NULL if not found.
  */
 char *_strstr(const char *str, const char *n_str)
@@ -155,5 +154,55 @@ if (n_str[m] == '\0')
 return ((char *)&str[n]);
 }
 return (NULL);
+
+}
+
+/**
+ * exitmsg - Concatenate error message components
+ * @ermsg: Buffer to store the error message thats to be printed
+ * @shname: program name
+ * @cycle_count: keep track of the count
+ * @command: Command causing the error
+ *
+ * Return: Nothing
+ */
+
+void exitmsg(char *ermsg, const char *shname,
+int cycle_count, const char *command)
+{
+int len = 0;
+int j;
+int track = cycle_count;
+int num = 1;
+const char *notfound = "exit: wrong num: ";
+
+while (*shname != '\0')
+ermsg[len++] = *shname++;
+ermsg[len++] = ':';
+ermsg[len++] = ' ';
+
+while (track / 10 > 0)
+{
+num++;
+track /= 10;
+
+}
+
+for (j = 0; j < num; j++)
+{
+ermsg[len + num - j - 1] = '0' + (cycle_count % 10);
+cycle_count /= 10;
+}
+len += num;
+ermsg[len++] = ':';
+ermsg[len++] = ' ';
+
+while (*notfound != '\0')
+ermsg[len++] = *notfound++;
+
+while (*command != '\0')
+ermsg[len++] = *command++;
+ermsg[len++] = '\n';
+ermsg[len] = '\0';
 
 }
